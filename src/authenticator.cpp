@@ -107,6 +107,9 @@ int authenticator::checkCreds(std::string username, std::string password)
 			reloadCreds();
 			return compare(username, password);
 			break;
+		case 255:
+			return 255;
+			break; // For security reasons
 		default:
 			return compare(username, password);
 	}
