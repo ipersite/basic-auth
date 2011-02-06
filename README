@@ -1,1 +1,7 @@
 A program to give basic authentication based on file and (in the future) database queries. In particular it is written for Squid Proxy.
+
+TODO:
+* Separated logger class
+* Configurator  class to parse configuration file
+* Add support for MySQL database
+* Make use of config.h in logging
