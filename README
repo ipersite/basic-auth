@@ -1,0 +1,1 @@
+A program to give basic authentication based on file and (in the future) database queries. In particular it is written for Squid Proxy.
