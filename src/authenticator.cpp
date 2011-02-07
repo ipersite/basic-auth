@@ -1,23 +1,10 @@
-#include <iostream>
 #include "authenticator.h"
-#include "utils.h"
 
-authenticator::authenticator(const char *credsfile = NULL, bool logger = false)
+authenticator::authenticator(const char *credsfile = NULL)
 {
 	credsFile = fopen(credsfile, "r");
-	loggerActive = logger;
-	if(loggerActive)
-	{
-		char logFilePath[FILENAME_MAX];
-		sprintf(logFilePath, "%s/log/log_%d.txt", getDataDirectory(), (int)time(NULL));
-		logFile = fopen(logFilePath, "w");
-		if(logFile == NULL)
-		{
-			fprintf(stderr, "Unable to open log file.\n");
-			exit(1);
-		}
-		addLog("INFO: Program started.");
-	}
+	log = new logger("./");
+	log->addLog(LOGINFO, "Authenticator initialized.");
 	if(reloadCreds())
 	{
 		fprintf(stderr, "Unable to read credentials file.\n");
@@ -27,22 +14,15 @@ authenticator::authenticator(const char *credsfile = NULL, bool logger = false)
 
 authenticator::~authenticator()
 {
+	log->addLog(LOGINFO, "Authenticator terminated.");
 	fclose(credsFile);
-	if(loggerActive) fclose(logFile);
-}
-
-void authenticator::addLog(std::string text)
-{
-	if(loggerActive)
-	{
-		fprintf(logFile, "[%d] %s\n", (int)time(NULL), text.data());
-		fflush(logFile);
-	}
+	log->forceFlush();
+	delete log;
 }
 
 int authenticator::reloadCreds()
 {
-	addLog("INFO: Reloading credentials...");
+	log->addLog(LOGINFO, "Reloading credentials...");
 	//if(credsList != NULL) delete credsList;
 	credsList = new std::vector<credentials>;
 	int lines = 0;
@@ -61,8 +41,12 @@ int authenticator::reloadCreds()
 	} while(go);
 	if(lines == 0)
 	{
-		addLog("ERROR: No lines has been processes.");
+		log->addLog(LOGWARN, "No lines has been processes.");
 		return 1;
+	} else {
+		char logText[80];
+		sprintf(logText, "%d lines has been processed.", lines);
+		log->addLog(LOGINFO, std::string(logText));
 	}
 	return 0;
 }
@@ -94,16 +78,23 @@ int authenticator::compare(std::string username, std::string password)
 
 int authenticator::checkCreds(std::string username, std::string password)
 {
+	char logText[100];
 	switch(compare(username, password))
 	{
 		case 0:
+			sprintf(logText, "User %s has logged in.", username.data());
+			log->addLog(LOGAUTH, logText);
 			return 0;
 			break; // For security reasons
 		case 1:
+			sprintf(logText, "User %s doesn't exists. Trying to reload credentials...", username.data());
+			log->addLog(LOGAUTH, logText);
 			reloadCreds();
 			return compare(username, password);
 			break;
 		case 2:
+			sprintf(logText, "User %s exists, but supplied password is wrong. Trying to reload credentials...", username.data());
+			log->addLog(LOGAUTH, logText);
 			reloadCreds();
 			return compare(username, password);
 			break;

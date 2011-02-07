@@ -1,5 +1,6 @@
-AC_INIT([basicauth], [2.5b])
+AC_INIT([basicauth], [2.5])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_LANG(C++)
 AC_PROG_CXX
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([

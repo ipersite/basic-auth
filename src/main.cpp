@@ -2,6 +2,7 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include "configurator.h"
 #include "authenticator.h"
 
 int main(int argc, char *argv[])
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Unable to open given file.\n");
 		exit(1);
 	}
-	authenticator auth(argv[1], true);
+	authenticator auth(argv[1]);
 	while(1)
 	{
 		std::string username, password;
