@@ -14,7 +14,7 @@
 class authenticator
 {
 public:
-	authenticator(const char *credsfile);
+	authenticator(const char *credsfile, const char *logpath);
 	~authenticator();
 	void forceReload();
 	int checkCreds(std::string username, std::string password);

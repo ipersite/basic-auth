@@ -2,11 +2,13 @@
 #define CONF
 
 #include <string>
+#include <cstdio>
+#include <cstdlib>
 
 class configurator
 {
 public:
-	configurator(char *confFile);
+	configurator(const char *confFilePath);
 	~configurator();
 	void resetData();
 	std::string logPath, credsFile;
@@ -14,6 +16,7 @@ public:
 private:
 	int loadConf();
 	std::string logPathIn, credsFileIn;
+	FILE *confFile;
 };
 
 #endif

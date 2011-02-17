@@ -2,13 +2,13 @@
 #include <cstdio>
 #include <cstdlib>
 
-const char *getDataDirectory()
+/*const char *getDataDirectory()
 {
 	char exePath[FILENAME_MAX];
 	int status = readlink("/proc/self/exe", exePath, sizeof(exePath));
 	std::string exePathStr = exePath;
 	return exePathStr.substr(0, exePathStr.find_last_of("/")).data();
-}
+}*/
 
 std::string readFileLine(FILE *file, bool &last)
 {

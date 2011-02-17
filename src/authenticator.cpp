@@ -1,9 +1,9 @@
 #include "authenticator.h"
 
-authenticator::authenticator(const char *credsfile = NULL)
+authenticator::authenticator(const char *credsfile = NULL, const char *logpath = NULL)
 {
 	credsFile = fopen(credsfile, "r");
-	log = new logger("./");
+	log = new logger(logpath);
 	log->addLog(LOGINFO, "Authenticator initialized.");
 	if(reloadCreds())
 	{

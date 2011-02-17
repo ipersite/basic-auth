@@ -7,9 +7,10 @@
 
 int main(int argc, char *argv[])
 {
+	configurator conf(argv[1]);
 	if(argc < 2)
 	{
-		fprintf(stderr, "No credentials file given.\n");
+		fprintf(stderr, "No configuration file given.\n");
 		exit(1);
 	}
 	FILE *test = fopen(argv[1], "r");
@@ -18,7 +19,15 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Unable to open given file.\n");
 		exit(1);
 	}
-	authenticator auth(argv[1]);
+	fclose(test);
+	/*test = fopen(credsFile, "r");
+	if(test == NULL)
+	{
+		fprintf(stderr, "Unable to open given file.\n");
+		exit(1);
+	}*/
+	authenticator auth(conf.credsFile.data(), conf.logPath.data());
+	
 	while(1)
 	{
 		std::string username, password;

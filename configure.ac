@@ -1,10 +1,27 @@
-AC_INIT([basicauth], [2.5])
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.67])
+AC_INIT([basic-auth], [2.6], [ipersite@gmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign silent-rules])
 AM_SILENT_RULES([yes])
-AC_PROG_CXX
+AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([
- Makefile
- src/Makefile
-])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+
+# Checks for libraries.
+
+# Checks for header files.
+AC_CHECK_HEADERS([unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+
+# Checks for library functions.
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
 AC_OUTPUT
