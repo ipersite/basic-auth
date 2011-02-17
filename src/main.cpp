@@ -7,7 +7,6 @@
 
 int main(int argc, char *argv[])
 {
-	configurator conf(argv[1]);
 	if(argc < 2)
 	{
 		fprintf(stderr, "No configuration file given.\n");
@@ -20,6 +19,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 	fclose(test);
+	configurator conf(argv[1]);
 	/*test = fopen(credsFile, "r");
 	if(test == NULL)
 	{
