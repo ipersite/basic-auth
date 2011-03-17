@@ -8,6 +8,7 @@ AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
+CXXFLAGS=-fstack-protector
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC

@@ -1,8 +1,0 @@
-A program to give basic authentication based on file and (maybe in the future) database queries. In particular it is written for Squid Proxy.
-
-Now it has the capability to parse configuration file that contains the path of log files and the credentials file path, in order to give a file-based authentication.
-Install script doesn't copy any configuration file for now, but you can check the sintax by opening them. Easy, not? (you can find the in the "conf" directory).
-
-TODO:
-* Configurator class to parse configuration file (almost done)
-* Add support for MySQL database (maybe in the future)
