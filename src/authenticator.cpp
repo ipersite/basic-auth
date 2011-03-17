@@ -44,9 +44,7 @@ int authenticator::reloadCreds()
 		log->addLog(LOGWARN, "No lines has been processes.");
 		return 1;
 	} else {
-		char logText[80];
-		sprintf(logText, "%d lines has been processed.", lines);
-		log->addLog(LOGINFO, std::string(logText));
+		log->addLog(LOGINFO, "%d lines has been processed.", lines);
 	}
 	return 0;
 }
@@ -78,23 +76,19 @@ int authenticator::compare(std::string username, std::string password)
 
 int authenticator::checkCreds(std::string username, std::string password)
 {
-	char logText[100];
 	switch(compare(username, password))
 	{
 		case 0:
-			sprintf(logText, "User %s has logged in.", username.data());
-			log->addLog(LOGAUTH, logText);
+			log->addLog(LOGAUTH, "User %s has logged in.", username.data());
 			return 0;
 			break; // For security reasons
 		case 1:
-			sprintf(logText, "User %s doesn't exists. Trying to reload credentials...", username.data());
-			log->addLog(LOGAUTH, logText);
+			log->addLog(LOGAUTH, "User %s doesn't exists. Trying to reload credentials...", username.data());
 			reloadCreds();
 			return compare(username, password);
 			break;
 		case 2:
-			sprintf(logText, "User %s exists, but supplied password is wrong. Trying to reload credentials...", username.data());
-			log->addLog(LOGAUTH, logText);
+			log->addLog(LOGAUTH, "User %s exists, but supplied password is wrong. Trying to reload credentials...", username.data());
 			reloadCreds();
 			return compare(username, password);
 			break;

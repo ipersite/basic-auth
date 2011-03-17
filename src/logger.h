@@ -6,6 +6,7 @@
 #include <ctime>
 #include <sys/stat.h> 
 #include <config.h>
+#include <cstdarg>
 
 #define LOGINFO 0
 #define LOGWARN 1
@@ -17,7 +18,7 @@ class logger
 public:
 	logger(std::string logPath);
 	~logger();
-	void addLog(int type, std::string text);
+	void addLog(int type, const char *fmt, ...);
 	void forceFlush();
 	
 private:
