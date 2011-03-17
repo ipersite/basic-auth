@@ -14,4 +14,4 @@ TODO
 
 * Configurator class to parse configuration file (almost done)
   * Implementing GNU Bison to parse configuration file.
-*Improving logger to have a similar prototype like sprintf() for example.
+* Improving logger to have a similar prototype like sprintf() for example.
