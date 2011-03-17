@@ -22,3 +22,4 @@ TODO
 * Configurator class to parse configuration file (almost done)
   * Implementing GNU Bison to parse configuration file.
 * Write documentation for Doxygen.
+* Solve issue in authenticator class: when the class issue the command to reload credentials it doesn't print if the user got authenticated or not.
