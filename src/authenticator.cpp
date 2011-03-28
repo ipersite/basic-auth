@@ -76,26 +76,21 @@ int authenticator::compare(std::string username, std::string password)
 
 int authenticator::checkCreds(std::string username, std::string password)
 {
-	switch(compare(username, password))
+	reloadCreds();
+	int status;
+	switch(status = compare(username, password))
 	{
 		case 0:
 			log->addLog(LOGAUTH, "User %s has logged in.", username.data());
 			return 0;
 			break; // For security reasons
 		case 1:
-			log->addLog(LOGAUTH, "User %s doesn't exists. Trying to reload credentials...", username.data());
-			reloadCreds();
+			log->addLog(LOGAUTH, "User %s doesn't exists.", username.data());
 			return compare(username, password);
 			break;
 		case 2:
-			log->addLog(LOGAUTH, "User %s exists, but supplied password is wrong. Trying to reload credentials...", username.data());
-			reloadCreds();
-			return compare(username, password);
+			log->addLog(LOGAUTH, "User %s exists, but supplied password is wrong.", username.data());
 			break;
-		case 255:
-			return 255;
-			break; // For security reasons
-		default:
-			return compare(username, password);
 	}
+	return status;
 }

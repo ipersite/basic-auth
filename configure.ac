@@ -1,5 +1,5 @@
 AC_PREREQ([2.67])
-AC_INIT([basic-auth], [2.7b], [ipersite@gmail.com])
+AC_INIT([basic-auth], [2.75b], [ipersite@gmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign silent-rules])
 AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([config.h.in])
