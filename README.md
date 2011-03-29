@@ -1,7 +1,7 @@
 Basic Auth Program - for Squid Proxy
 =======================
 
-**Current version: 2.7b**
+**Current version: 2.75b**
 
 A program to give basic authentication based on file and (maybe in the future) database queries. In particular it is written for Squid Proxy.
 
