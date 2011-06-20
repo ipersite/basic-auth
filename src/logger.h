@@ -1,11 +1,11 @@
-#ifndef LOGGER
-#define LOGGER
+#ifndef LOGGER_H
+#define LOGGER_H
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <ctime>
-#include <sys/stat.h> 
-#include <config.h>
+#include <sys/stat.h>
+#include "config.h"
 #include <cstdarg>
 
 #define LOGINFO 0
