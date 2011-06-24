@@ -1,5 +1,5 @@
-#include "configurator.h"
-#include "utils.h"
+#include "configurator.hpp"
+#include "utils.hpp"
 
 configurator::configurator(const char *confFilePath = NULL)
 {

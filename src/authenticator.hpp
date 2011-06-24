@@ -8,8 +8,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <unistd.h>
-#include "logger.h"
-#include "utils.h"
+#include "logger.hpp"
+#include "utils.hpp"
 
 class authenticator
 {

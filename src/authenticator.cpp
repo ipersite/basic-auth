@@ -1,4 +1,4 @@
-#include "authenticator.h"
+#include "authenticator.hpp"
 
 authenticator::authenticator(const char *credsfile = NULL, const char *logpath = NULL)
 {

@@ -2,8 +2,8 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
-#include "configurator.h"
-#include "authenticator.h"
+#include "configurator.hpp"
+#include "authenticator.hpp"
 
 int main(int argc, char *argv[])
 {
