@@ -15,13 +15,13 @@ What's new in version 2.76b
 -----
 
 * Various code checks, corrections and improvements.
-* Now the building system is CMake.
+* The building system is CMake.
 
 TODO
 -----
 
 * Configurator class to parse configuration file (almost done)
-  * Implementing GNU Bison to parse configuration file. (next version)
-* Set up sqlite database interaction. Users and accesses will be saved in the database. (next version)
+  * Implementing Yaml parser to read configuration. (next version)
+* Set up sqlite3 database interaction. Users and accesses will be saved in the database. (next version)
 * Implementing MD5 hashing technologies. (next version)
 * (later) Write documentation for Doxygen.
