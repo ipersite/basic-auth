@@ -2,21 +2,16 @@
 #define CONF_H
 
 #include <string>
-#include <cstdio>
-#include <cstdlib>
+#include <map>
+#include <fstream>
+#include "include/yaml.h"
 
 class configurator
 {
 public:
-	configurator(const char *confFilePath);
+        configurator(std::string confFilePath);
 	~configurator();
-	void resetData();
-	std::string logPath, credsFile;
-
-private:
-	int loadConf();
-	std::string logPathIn, credsFileIn;
-	FILE *confFile;
+        std::map<std::string,std::string> config;
 };
 
 #endif

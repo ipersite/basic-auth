@@ -1,4 +1,6 @@
 INCLUDE(CheckIncludeFiles)
+ADD_SUBDIRECTORY(yaml-cpp)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config.h)
-ADD_EXECUTABLE(basic-auth utils.cpp logger.cpp authenticator.cpp configurator.cpp main.cpp)
+ADD_EXECUTABLE(basic-auth logger.cpp md5.cpp authenticator.cpp configurator.cpp main.cpp)
+TARGET_LINK_LIBRARIES(basic-auth yamlcpp sqlite3)
 INSTALL(TARGETS basic-auth RUNTIME DESTINATION bin)

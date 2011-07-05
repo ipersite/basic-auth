@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include "config.h"
 #include <cstdarg>
+#include <unistd.h>
 
 #define LOGINFO 0
 #define LOGWARN 1
@@ -25,6 +26,7 @@ private:
 	std::string format;
 	int checkFileExists(std::string filename);
 	FILE *logFile;
+        clock_t start;
 };
 
 #endif

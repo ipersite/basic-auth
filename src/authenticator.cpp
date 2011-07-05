@@ -1,96 +1,70 @@
 #include "authenticator.hpp"
 
-authenticator::authenticator(const char *credsfile = NULL, const char *logpath = NULL)
+authenticator::authenticator(std::string _dbfile, logger *_logger)
 {
-	credsFile = fopen(credsfile, "r");
-	log = new logger(logpath);
-	log->addLog(LOGINFO, "Authenticator initialized.");
-	if(reloadCreds())
-	{
-		fprintf(stderr, "Unable to read credentials file.\n");
-		exit(1);
-	}
+    log = _logger;
+    if(sqlite3_open_v2(_dbfile.data(), &db, SQLITE_OPEN_READONLY, NULL) != SQLITE_OK)
+    {
+        std::cerr << "Error: unable to open database file." << std::endl;
+        exit(1);
+    }
 }
 
 authenticator::~authenticator()
 {
-	log->addLog(LOGINFO, "Authenticator terminated.");
-	fclose(credsFile);
-	log->forceFlush();
-	delete log;
-}
-
-int authenticator::reloadCreds()
-{
-	log->addLog(LOGINFO, "Reloading credentials...");
-	//if(credsList != NULL) delete credsList;
-	credsList = new std::vector<credentials>;
-	int lines = 0;
-	bool go = true;
-	do
-	{
-		bool last;
-		std::string line = readFileLine(credsFile, last);
-		go = !last;
-		lines++;
-		std::string username, password;
-		int seppos = line.find(":");
-		username = line.substr(0, seppos);
-		password = line.substr(seppos+1);
-		credsList->push_back((credentials){username, password});
-	} while(go);
-	if(lines == 0)
-	{
-		log->addLog(LOGWARN, "No lines has been processes.");
-		return 1;
-	} else {
-		log->addLog(LOGINFO, "%d lines has been processed.", lines);
-	}
-	return 0;
-}
-
-void authenticator::forceReload()
-{
-	reloadCreds();
-}
-
-int authenticator::compare(std::string username, std::string password)
-{
-	int status = 0;
-	if(username == "" && password == "") return 255;
-	for(unsigned int i = 0; i < credsList->size(); i++)
-	{
-		if(!username.compare(credsList->at(i).username))
-			if(!password.compare(credsList->at(i).password))
-			{
-				status = 0;
-				break;
-			} else {
-				status = 2;
-				break;
-			}
-		else status = 1;
-	}
-	return status;
+    sqlite3_close(db);
 }
 
 int authenticator::checkCreds(std::string username, std::string password)
 {
-	reloadCreds();
-	int status;
-	switch(status = compare(username, password))
-	{
-		case 0:
-			log->addLog(LOGAUTH, "User %s has logged in.", username.data());
-			return 0;
-			break; // For security reasons
-		case 1:
-			log->addLog(LOGAUTH, "User %s doesn't exists.", username.data());
-			return compare(username, password);
-			break;
-		case 2:
-			log->addLog(LOGAUTH, "User %s exists, but supplied password is wrong.", username.data());
-			break;
-	}
-	return status;
+    std::string checkStmt = "SELECT * FROM users WHERE username = '";
+    checkStmt.append(username);
+    checkStmt.append("';");
+    //    std::cout << checkStmt << std::endl;
+    sqlite3_stmt *checkStmtS;
+    sqlite3_prepare_v2(db, checkStmt.c_str(), checkStmt.size()+1, &checkStmtS, NULL);
+    if(sqlite3_step(checkStmtS) == SQLITE_ROW)
+    {
+        std::map<std::string,int> columns;
+        for(unsigned int i = 0; i < sqlite3_column_count(checkStmtS); i++)
+        {
+            columns.insert(std::pair<std::string,int>(std::string(sqlite3_column_name(checkStmtS, i)), i));
+        }
+        /*for(std::map<std::string,int>::iterator i = columns.begin(); i != columns.end(); i++)
+        {
+            std::cout << i->first << " = " << i->second << std::endl;
+        }*/
+        std::stringstream logmsgs;
+        if(std::string((const char*)sqlite3_column_text(checkStmtS, columns["password"])) != md5(password))
+        {
+            if(sqlite3_column_int(checkStmtS, columns["status"]) == 1) logmsgs << "User ";
+            else if(sqlite3_column_int(checkStmtS, columns["status"]) == 2) logmsgs << "Admin ";
+            logmsgs << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") tried logging in using a wrong password.";
+            log->addLog(LOGAUTH, logmsgs.str().data());
+            sqlite3_finalize(checkStmtS);
+            return 2;
+        }
+        switch(sqlite3_column_int(checkStmtS, columns["status"]))
+        {
+        case 0:
+            logmsgs << "User " << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") tried logging in (existing but disabled).";
+            log->addLog(LOGAUTH, logmsgs.str().data());
+            sqlite3_finalize(checkStmtS);
+            return 3;
+        case 1:
+            logmsgs << "User " << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") logged in.";
+            log->addLog(LOGAUTH, logmsgs.str().data());
+            sqlite3_finalize(checkStmtS);
+            return 0;
+        case 2:
+            logmsgs << "Admin " << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") logged in.";
+            log->addLog(LOGAUTH, logmsgs.str().data());
+            sqlite3_finalize(checkStmtS);
+            return 0;
+        }
+    } else {
+        log->addLog(LOGAUTH, "User %s tried logging in but doesn't exists.", username.c_str());
+        sqlite3_finalize(checkStmtS);
+        return 1;
+    }
 }

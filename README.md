@@ -1,27 +1,23 @@
-Basic Auth Program - for Squid Proxy
+Basic Authentication Program - for Squid Proxy
 =======================
 
-**Current version: 2.76b**
+**Current version: 3.0**
 
-A program to give basic authentication based on file and (in the next version) database queries. In particular it is written for Squid Proxy.
+A program to give basic authentication based on sqlite database. In particular it is written for Squid Proxy Server.
 
 Capabilities
 -----
 
-Now it has the capability to parse configuration file that contains the path of log files and the credentials file path, in order to give a file-based authentication.
-Install script doesn't copy any configuration file for now, but you can check the syntax by opening them (you can find them in the "conf" directory).
+It parses the configuration file (YAML syntax) and then it opens a sqlite database connection. If everything gone well, it starts waiting for username and passwords on stdin.
+The expected syntax is:
+	[username][space][password][return]
 
-What's new in version 2.76b
+Configuration file and an empty database can be found in the root directory of the project.
+
+What's new in version 3.0b
 -----
 
 * Various code checks, corrections and improvements.
-* The building system is CMake.
-
-TODO
------
-
-* Configurator class to parse configuration file (almost done)
-  * Implementing Yaml parser to read configuration. (next version)
-* Set up sqlite3 database interaction. Users and accesses will be saved in the database. (next version)
-* Implementing MD5 hashing technologies. (next version)
-* (later) Write documentation for Doxygen.
+* Complete rewrite of class authenticator.
+* Added sqlite database support.
+* YAML syntax in configuration file.

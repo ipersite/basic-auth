@@ -1,0 +1,3 @@
+FILE(GLOB sources "[a-zA-Z]*.cpp")
+ADD_LIBRARY(yamlcpp STATIC ${sources})
+SET_TARGET_PROPERTIES(yamlcpp PROPERTIES COMPILE_FLAGS "-I${CMAKE_CURRENT_SOURCE_DIR}/../include")

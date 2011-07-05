@@ -2,33 +2,23 @@
 #define AUTH_H
 
 #include <string>
-#include <vector>
-#include <ctime>
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <unistd.h>
+#include <map>
 #include "logger.hpp"
-#include "utils.hpp"
+#include "include/yaml.h"
+#include "md5.hpp"
+#include <sqlite3.h>
 
 class authenticator
 {
 public:
-	authenticator(const char *credsfile, const char *logpath);
-	~authenticator();
-	void forceReload();
-	int checkCreds(std::string username, std::string password);
-	
+    authenticator(std::string _dbfile, logger *_logger);
+    ~authenticator();
+    int checkCreds(std::string username, std::string password);
+
 private:
-	typedef struct {
-	std::string username;
-	std::string password;
-	} credentials;
-	std::vector<credentials> *credsList;
-	int reloadCreds();
-	FILE *credsFile;
-	int compare(std::string username, std::string password);
-	logger *log;
+    sqlite3 *db;
+    logger *log;
 };
 
 #endif
