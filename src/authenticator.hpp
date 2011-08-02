@@ -17,6 +17,7 @@ public:
     int checkCreds(std::string username, std::string password);
 
 private:
+    std::string sql_escape_string(std::string sqlstmt);
     sqlite3 *db;
     logger *log;
 };

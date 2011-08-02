@@ -18,9 +18,9 @@ authenticator::~authenticator()
 int authenticator::checkCreds(std::string username, std::string password)
 {
     std::string checkStmt = "SELECT * FROM users WHERE username = '";
-    checkStmt.append(username);
+    checkStmt.append(sql_escape_string(username));
     checkStmt.append("';");
-    //    std::cout << checkStmt << std::endl;
+    std::cout << checkStmt << std::endl;
     sqlite3_stmt *checkStmtS;
     sqlite3_prepare_v2(db, checkStmt.c_str(), checkStmt.size()+1, &checkStmtS, NULL);
     if(sqlite3_step(checkStmtS) == SQLITE_ROW)
@@ -67,4 +67,47 @@ int authenticator::checkCreds(std::string username, std::string password)
         sqlite3_finalize(checkStmtS);
         return 1;
     }
+}
+
+std::string authenticator::sql_escape_string(std::string sqlstmt)
+{
+        for(unsigned int i = 0; i < sqlstmt.size(); i++)
+        {
+                if(sqlstmt.substr(i, 1) == "'")
+                {
+                        sqlstmt.insert(i, 1, '\'');
+                        i++;
+                }
+                /*else if(sqlstmt.substr(i, 1) == "\"")
+                {
+                        sqlstmt.insert(i, 1, '\\');
+                        i++;
+                }
+                else if(sqlstmt.substr(i, 2) == "\\n")
+                {
+                        sqlstmt.insert(i, 1, '\\');
+                        i += 2;
+                }
+                else if(sqlstmt.substr(i, 2) == "\\r")
+                {
+                        sqlstmt.insert(i, 1, '\\');
+                        i += 2;
+                }
+                else if(sqlstmt.substr(i, 1) == "\\")
+                {
+                        sqlstmt.insert(i, 1, '\\');
+                        i++;
+                }
+                else if(sqlstmt.substr(i, 4) == "\\x00")
+                {
+                        sqlstmt.insert(i, 1, '\\');
+                        i += 4;
+                }
+                else if(sqlstmt.substr(i, 4) == "\\x1a")
+                {
+                        sqlstmt.insert(i, 1, '\\');
+                        i += 4;
+                }*/
+        }
+        return sqlstmt;
 }
