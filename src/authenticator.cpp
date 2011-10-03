@@ -18,7 +18,7 @@ int authenticator::checkCreds(std::string username, std::string password)
     std::string checkStmt = "SELECT * FROM users WHERE username = '";
     checkStmt.append(sql_escape_string(username));
     checkStmt.append("';");
-    std::cout << checkStmt << std::endl;
+    //std::cout << checkStmt << std::endl;
     sql::Statement *checkStmtM = con->createStatement();
     sql::ResultSet *result;
     sql::ResultSetMetaData *meta;
