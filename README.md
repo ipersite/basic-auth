@@ -12,7 +12,7 @@ It parses the configuration file (YAML syntax) and then it opens a sqlite databa
 The expected syntax is:
 	[username][space][password][return]
 
-Configuration file and an empty database can be found in the root directory of the project.
+Configuration file example is in the root directory while there's another directory called "sql" containing the database setup. Remember to edit them according to what you need!
 
 What's new in version 3.0.2
 -----
