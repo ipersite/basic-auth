@@ -21,7 +21,12 @@ int main(int argc, char *argv[])
     fclose(test);
     configurator conf(argv[1]);
     logger log(conf.config["logPath"]);
-    authenticator auth(conf.config["dbFile"], &log);
+    dbinfo dbi;
+    dbi.host = conf.config["db-host"];
+    dbi.name = conf.config["db-name"];
+    dbi.user = conf.config["db-user"];
+    dbi.pass = conf.config["db-pass"];
+    authenticator auth(dbi, &log);
     while(1)
     {
         std::string username, password;

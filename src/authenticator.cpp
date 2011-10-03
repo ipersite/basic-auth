@@ -1,18 +1,16 @@
 #include "authenticator.hpp"
 
-authenticator::authenticator(std::string _dbfile, logger *_logger)
+authenticator::authenticator(dbinfo dbInfo, logger *_logger)
 {
     log = _logger;
-    if(sqlite3_open_v2(_dbfile.data(), &db, SQLITE_OPEN_READONLY, NULL) != SQLITE_OK)
-    {
-        std::cerr << "Error: unable to open database file." << std::endl;
-        exit(1);
-    }
+    driver = get_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", dbInfo.user, dbInfo.pass);
+    con->setSchema(dbInfo.name);
 }
 
 authenticator::~authenticator()
 {
-    sqlite3_close(db);
+    con->close();
 }
 
 int authenticator::checkCreds(std::string username, std::string password)
@@ -21,50 +19,44 @@ int authenticator::checkCreds(std::string username, std::string password)
     checkStmt.append(sql_escape_string(username));
     checkStmt.append("';");
     std::cout << checkStmt << std::endl;
-    sqlite3_stmt *checkStmtS;
-    sqlite3_prepare_v2(db, checkStmt.c_str(), checkStmt.size()+1, &checkStmtS, NULL);
-    if(sqlite3_step(checkStmtS) == SQLITE_ROW)
+    sql::Statement *checkStmtM = con->createStatement();
+    sql::ResultSet *result;
+    sql::ResultSetMetaData *meta;
+    result = checkStmtM->executeQuery(checkStmt);
+    meta = result->getMetaData();
+    if(result->next())
     {
-        std::map<std::string,int> columns;
-        for(unsigned int i = 0; i < sqlite3_column_count(checkStmtS); i++)
-        {
-            columns.insert(std::pair<std::string,int>(std::string(sqlite3_column_name(checkStmtS, i)), i));
-        }
-        /*for(std::map<std::string,int>::iterator i = columns.begin(); i != columns.end(); i++)
-        {
-            std::cout << i->first << " = " << i->second << std::endl;
-        }*/
         std::stringstream logmsgs;
-        if(std::string((const char*)sqlite3_column_text(checkStmtS, columns["password"])) != md5(password))
+        if(result->getString("password") != md5(password))
         {
-            if(sqlite3_column_int(checkStmtS, columns["status"]) == 1) logmsgs << "User ";
-            else if(sqlite3_column_int(checkStmtS, columns["status"]) == 2) logmsgs << "Admin ";
-            logmsgs << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") tried logging in using a wrong password.";
+            if(result->getInt("status") == 1) logmsgs << "User '";
+            else if(result->getInt("status") == 2) logmsgs << "Admin '";
+            logmsgs << username << "' (" << result->getString("realname") << ") tried logging in using a wrong password.";
             log->addLog(LOGAUTH, logmsgs.str().data());
-            sqlite3_finalize(checkStmtS);
+            checkStmtM->close();
             return 2;
         }
-        switch(sqlite3_column_int(checkStmtS, columns["status"]))
+        switch(result->getInt("status"))
         {
         case 0:
-            logmsgs << "User " << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") tried logging in (existing but disabled).";
+            logmsgs << "User '" << username << "' (" << result->getString("realname") << ") tried logging in (existing but disabled).";
             log->addLog(LOGAUTH, logmsgs.str().data());
-            sqlite3_finalize(checkStmtS);
+            checkStmtM->close();
             return 3;
         case 1:
-            logmsgs << "User " << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") logged in.";
+            logmsgs << "User '" << username << "' (" << result->getString("realname") << ") logged in.";
             log->addLog(LOGAUTH, logmsgs.str().data());
-            sqlite3_finalize(checkStmtS);
+            checkStmtM->close();
             return 0;
         case 2:
-            logmsgs << "Admin " << username << " (" << sqlite3_column_text(checkStmtS, columns["realname"]) << ") logged in.";
+            logmsgs << "Admin '" << username << "' (" << result->getString("realname") << ") logged in.";
             log->addLog(LOGAUTH, logmsgs.str().data());
-            sqlite3_finalize(checkStmtS);
+            checkStmtM->close();
             return 0;
         }
     } else {
         log->addLog(LOGAUTH, "User %s tried logging in but doesn't exists.", username.c_str());
-        sqlite3_finalize(checkStmtS);
+        checkStmtM->close();
         return 1;
     }
 }
@@ -78,7 +70,7 @@ std::string authenticator::sql_escape_string(std::string sqlstmt)
                         sqlstmt.insert(i, 1, '\'');
                         i++;
                 }
-                /*else if(sqlstmt.substr(i, 1) == "\"")
+                else if(sqlstmt.substr(i, 1) == "\"")
                 {
                         sqlstmt.insert(i, 1, '\\');
                         i++;
@@ -107,7 +99,7 @@ std::string authenticator::sql_escape_string(std::string sqlstmt)
                 {
                         sqlstmt.insert(i, 1, '\\');
                         i += 4;
-                }*/
+                }
         }
         return sqlstmt;
 }

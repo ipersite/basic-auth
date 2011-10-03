@@ -10,9 +10,15 @@ configurator::configurator(std::string confFilePath = NULL)
     std::string logPath;
     doc["log-path"] >> logPath;
     config.insert(std::pair<std::string,std::string>("logPath",logPath));
-    std::string dbFile;
-    doc["database"] >> dbFile;
-    config.insert(std::pair<std::string,std::string>("dbFile",dbFile));
+    std::string dbuser, dbpass, dbname, dbhost;
+    doc["database"]["host"] >> dbhost;
+    doc["database"]["username"] >> dbuser;
+    doc["database"]["password"] >> dbpass;
+    doc["database"]["database"] >> dbname;
+    config.insert(std::pair<std::string,std::string>("db-name",dbname));
+    config.insert(std::pair<std::string,std::string>("db-user",dbuser));
+    config.insert(std::pair<std::string,std::string>("db-pass",dbpass));
+    config.insert(std::pair<std::string,std::string>("db-host",dbhost));
     fin.close();
 }
 

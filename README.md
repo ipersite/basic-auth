@@ -1,7 +1,7 @@
 Basic Authentication Program - for Squid Proxy
 =======================
 
-**Current version: 3.0**
+**Current version: 3.0.2**
 
 A program to give basic authentication based on sqlite database. In particular it is written for Squid Proxy Server.
 
@@ -14,10 +14,9 @@ The expected syntax is:
 
 Configuration file and an empty database can be found in the root directory of the project.
 
-What's new in version 3.0b
+What's new in version 3.0.2
 -----
 
 * Various code checks, corrections and improvements.
-* Complete rewrite of class authenticator.
-* Added sqlite database support.
 * YAML syntax in configuration file.
+* DB type is now MySQL (MariaDB and equivalent).
