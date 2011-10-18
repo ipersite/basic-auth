@@ -1,7 +1,7 @@
 Basic Authentication Program - for Squid Proxy
 =======================
 
-**Current version: 3.0.2**
+**Current version: 3.0.2.2**
 
 A program to give basic authentication based on sqlite database. In particular it is written for Squid Proxy Server.
 

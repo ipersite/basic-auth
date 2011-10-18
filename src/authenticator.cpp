@@ -4,7 +4,7 @@ authenticator::authenticator(dbinfo dbInfo, logger *_logger)
 {
     log = _logger;
     driver = get_driver_instance();
-    con = driver->connect("tcp://127.0.0.1:3306", dbInfo.user, dbInfo.pass);
+    con = driver->connect(dbInfo.host, dbInfo.user, dbInfo.pass);
     con->setSchema(dbInfo.name);
 }
 
@@ -15,6 +15,7 @@ authenticator::~authenticator()
 
 int authenticator::checkCreds(std::string username, std::string password)
 {
+    if(username.size() == 0 && password.size() == 0) return 255;
     std::string checkStmt = "SELECT * FROM users WHERE username = '";
     checkStmt.append(sql_escape_string(username));
     checkStmt.append("';");
@@ -31,7 +32,7 @@ int authenticator::checkCreds(std::string username, std::string password)
         {
             if(result->getInt("status") == 1) logmsgs << "User '";
             else if(result->getInt("status") == 2) logmsgs << "Admin '";
-            logmsgs << username << "' (" << result->getString("realname") << ") tried logging in using a wrong password.";
+            logmsgs << "User '" << username << "' (" << result->getString("realname") << ") tried logging in using a wrong password.";
             log->addLog(LOGAUTH, logmsgs.str().data());
             checkStmtM->close();
             return 2;
@@ -55,7 +56,7 @@ int authenticator::checkCreds(std::string username, std::string password)
             return 0;
         }
     } else {
-        log->addLog(LOGAUTH, "User %s tried logging in but doesn't exists.", username.c_str());
+        log->addLog(LOGAUTH, "User '%s' tried logging in but doesn't exists.", username.c_str());
         checkStmtM->close();
         return 1;
     }
